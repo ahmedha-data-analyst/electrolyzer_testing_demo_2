@@ -1,0 +1,8 @@
+# HydroStar NextGen dashboard — Demo mode (app_v2.py) only.
+# Runs fully offline: no Supabase, Raspberry Pi or network dependencies.
+# 1.60 adds the dialog lifecycle and keyed layout APIs used by app_v2.py.
+streamlit>=1.60,<2.0
+pandas>=2.1,<3.0
+numpy>=1.26,<3.0
+plotly>=5.24,<7.0
+PyYAML>=6.0,<7.0

@@ -1,0 +1,318 @@
+# Provisional engineering registry for the local NextGen dashboard template.
+# Source: NX-PID-001 prototype, page 1, plus the alarm thresholds supplied by Ahmed/Taqi.
+# This is a dashboard configuration aid, not an approved alarm set-point schedule.
+
+status_palette:
+  NORMAL: "#499823"      # HydroStar green
+  L: "#F6A609"           # amber
+  H: "#F6A609"           # amber
+  LL: "#D32F2F"          # red
+  HH: "#D32F2F"          # red
+  UNKNOWN: "#8C919A"     # grey: missing/stale/unavailable
+  UNCONFIGURED: "#8C919A" # grey: no approved limits configured
+
+alarm_precedence: [HH, LL, H, L, NORMAL, UNCONFIGURED, UNKNOWN]
+
+level_conversion:
+  raw_source_unit: cm
+  engineering_unit: mm
+  rule: "level_deviation_mm = baseline_distance_mm - (raw_distance_cm * 10)"
+  explanation: "For an ultrasonic sensor above the liquid, a smaller measured distance means a higher liquid level."
+  baseline_distance_mm: null
+  thresholds_relative_to_baseline_mm:
+    LL: -10.0
+    L: -5.0
+    H: 5.0
+    HH: 10.0
+
+sensors:
+  - internal_key: LT001
+    pid_tag: LT-001
+    display_name: Electrolyte Level 1 (Cathode)
+    description: "Primary level transmitter monitoring liquid level in the Halopod."
+    group_id: 1
+    group_name: Halopod core monitoring
+    critical: true
+    measurement: level_deviation
+    unit: mm
+    provisional_v1_source: distance_cm
+    source_mode: live_in_hybrid
+    limits: {LL: -10.0, L: -5.0, H: 5.0, HH: 10.0}
+    notes: "Requires a configured baseline distance before live values can be interpreted as level."
+    pid_highlight:
+      x: 30.42
+      y: 22.09
+
+  - internal_key: TT001
+    pid_tag: TT-001
+    display_name: Halopod Temperature
+    description: "Temperature transmitter monitoring process temperature in the Halopod."
+    group_id: 1
+    group_name: Halopod core monitoring
+    critical: true
+    measurement: temperature
+    unit: "°C"
+    provisional_v1_source: temp_1_c
+    source_mode: live_in_hybrid
+    limits: {LL: null, L: null, H: 50.0, HH: 60.0}
+    pid_highlight:
+      x: 35.57
+      y: 22.09
+
+  - internal_key: PT001
+    pid_tag: PT-001
+    display_name: Halopod Pressure
+    description: "Pressure transmitter monitoring operating pressure in the Halopod."
+    group_id: 1
+    group_name: Halopod core monitoring
+    critical: true
+    measurement: pressure
+    unit: barg
+    provisional_v1_source: pressure_barg
+    source_mode: live_in_hybrid
+    limits: {LL: null, L: null, H: 2.5, HH: 4.0}
+    pid_highlight:
+      x: 39.30
+      y: 21.98
+
+  - internal_key: LT002
+    pid_tag: LT-002
+    display_name: Electrolyte Level 1 (Anode)
+    description: "Secondary level transmitter monitoring liquid level in the Halopod."
+    group_id: 1
+    group_name: Halopod core monitoring
+    critical: true
+    measurement: level_deviation
+    unit: mm
+    provisional_v1_source: null
+    source_mode: simulated_in_hybrid
+    limits: {LL: -10.0, L: -5.0, H: 5.0, HH: 10.0}
+    notes: "Requires its own baseline distance when connected to a real sensor."
+    pid_highlight:
+      x: 42.82
+      y: 21.98
+
+  - internal_key: CT001
+    pid_tag: CT-001
+    display_name: Electrolyte Conductivity
+    description: "Conductivity transmitter monitoring electrolyte quality in the Halopod."
+    group_id: 2
+    group_name: Electrolyte quality
+    critical: false
+    measurement: conductivity
+    unit: "µS/cm"
+    unit_status: provisional
+    provisional_v1_source: null
+    source_mode: simulated_in_hybrid
+    limits: {LL: null, L: null, H: null, HH: null}
+    pid_highlight:
+      x: 51.29
+      y: 45.49
+
+  - internal_key: FT001_H2
+    pid_tag: FT-001
+    display_name: Hydrogen Product Flow
+    description: "Flow transmitter on the hydrogen product stream leaving the Halopod."
+    group_id: 3
+    group_name: Primary product flow
+    critical: true
+    measurement: flow
+    unit: "Nm³/h"
+    provisional_v1_source: flow_slpm
+    provisional_conversion: "Nm³/h = SLPM * 0.06"
+    source_mode: live_in_hybrid
+    limits: {LL: null, L: null, H: null, HH: null}
+    pid_highlight:
+      x: 55.35
+      y: 16.95
+
+  - internal_key: FT002_O2
+    pid_tag: FT-002
+    display_name: Oxygen Product Flow
+    description: "Flow transmitter on the oxygen product stream leaving the Halopod."
+    group_id: 3
+    group_name: Primary product flow
+    critical: true
+    measurement: flow
+    unit: "Nm³/h"
+    provisional_v1_source: null
+    source_mode: simulated_in_hybrid
+    limits: {LL: null, L: null, H: null, HH: null}
+    pid_highlight:
+      x: 55.35
+      y: 32.36
+
+  - internal_key: ANALYSER_H2_IN_O2
+    pid_tag: AIT-001
+    display_name: H₂ in O₂
+    description: "Gas analyser measuring hydrogen concentration in the oxygen product stream."
+    group_id: 4
+    group_name: Gas quality and crossover
+    critical: true
+    measurement: gas_concentration
+    unit: "vol%"
+    provisional_v1_source: null
+    source_mode: simulated_in_hybrid
+    limits: {LL: null, L: null, H: 2.0, HH: 3.0}
+    notes: "Working analyser tag assigned for dashboard identification; confirm it on the next P&ID revision."
+    pid_highlight:
+      x: 53.05
+      y: 82.99
+      shape: rectangle
+      width: 8.00
+      height: 4.50
+
+  - internal_key: ANALYSER_O2_IN_H2
+    pid_tag: AIT-002
+    display_name: O₂ in H₂
+    description: "Gas analyser measuring oxygen concentration in the hydrogen product stream."
+    group_id: 4
+    group_name: Gas quality and crossover
+    critical: true
+    measurement: gas_concentration
+    unit: "vol%"
+    provisional_v1_source: null
+    source_mode: simulated_in_hybrid
+    limits: {LL: null, L: null, H: 2.0, HH: 3.0}
+    notes: "Working analyser tag assigned for dashboard identification; confirm it on the next P&ID revision."
+    pid_highlight:
+      x: 52.98
+      y: 88.13
+      shape: rectangle
+      width: 8.00
+      height: 4.50
+
+  - internal_key: TT002_O2
+    pid_tag: TT-002
+    display_name: Oxygen Product Temperature
+    description: "Temperature transmitter on the oxygen product stream upstream of the demister and analyser."
+    group_id: 5
+    group_name: Product stream conditioning
+    critical: false
+    measurement: temperature
+    unit: "°C"
+    provisional_v1_source: temp_2_c
+    source_mode: live_in_hybrid
+    limits: {LL: null, L: null, H: 50.0, HH: 60.0}
+    notes: "Mapping of the existing connector-temperature channel is provisional."
+    pid_highlight:
+      x: 15.99
+      y: 79.82
+
+  - internal_key: PT002_O2
+    pid_tag: PT-002
+    display_name: Oxygen Product Pressure
+    description: "Pressure transmitter on the oxygen product stream upstream of the demister and analyser."
+    group_id: 5
+    group_name: Product stream conditioning
+    critical: false
+    measurement: pressure
+    unit: barg
+    provisional_v1_source: null
+    source_mode: simulated_in_hybrid
+    limits: {LL: null, L: null, H: 2.5, HH: 4.0}
+    pid_highlight:
+      x: 20.05
+      y: 79.71
+
+  - internal_key: FT003_O2
+    pid_tag: FT-003
+    display_name: Oxygen Product Outlet Flow
+    description: "Flow transmitter on the oxygen product stream upstream of the demister and analyser."
+    group_id: 5
+    group_name: Product stream conditioning
+    critical: false
+    measurement: flow
+    unit: "Nm³/h"
+    provisional_v1_source: null
+    source_mode: simulated_in_hybrid
+    limits: {LL: null, L: null, H: null, HH: null}
+    notes: "NX-PID-001 also uses FT-003 on the nitrogen line. Keep this unique internal key until the P&ID tag collision is resolved."
+    pid_highlight:
+      x: 24.19
+      y: 79.93
+
+  - internal_key: TT003_H2
+    pid_tag: TT-003
+    display_name: Hydrogen Product Temperature
+    description: "Temperature transmitter on the hydrogen product stream upstream of the demister and analyser."
+    group_id: 5
+    group_name: Product stream conditioning
+    critical: false
+    measurement: temperature
+    unit: "°C"
+    provisional_v1_source: null
+    source_mode: simulated_in_hybrid
+    limits: {LL: null, L: null, H: 50.0, HH: 60.0}
+    pid_highlight:
+      x: 15.92
+      y: 91.30
+
+  - internal_key: PT003_H2
+    pid_tag: PT-003
+    display_name: Hydrogen Product Pressure
+    description: "Pressure transmitter on the hydrogen product stream upstream of the demister and analyser."
+    group_id: 5
+    group_name: Product stream conditioning
+    critical: false
+    measurement: pressure
+    unit: barg
+    provisional_v1_source: null
+    source_mode: simulated_in_hybrid
+    limits: {LL: null, L: null, H: 2.5, HH: 4.0}
+    pid_highlight:
+      x: 20.12
+      y: 91.19
+
+  - internal_key: FT004_H2
+    pid_tag: FT-004
+    display_name: Hydrogen Product Outlet Flow
+    description: "Flow transmitter on the hydrogen product stream upstream of the demister and analyser."
+    group_id: 5
+    group_name: Product stream conditioning
+    critical: false
+    measurement: flow
+    unit: "Nm³/h"
+    provisional_v1_source: null
+    source_mode: simulated_in_hybrid
+    limits: {LL: null, L: null, H: null, HH: null}
+    pid_highlight:
+      x: 24.19
+      y: 91.30
+
+  - internal_key: FT003_N2
+    pid_tag: FT-003
+    display_name: Nitrogen Feed Flow
+    description: "Flow transmitter on the nitrogen feed line upstream of the Halopod."
+    group_id: 6
+    group_name: Nitrogen feed and purge
+    critical: false
+    measurement: flow
+    unit: "SLPM"
+    unit_status: provisional
+    provisional_v1_source: null
+    source_mode: simulated_in_hybrid
+    limits: {LL: null, L: null, H: null, HH: null}
+    notes: "NX-PID-001 also uses FT-003 on the oxygen product stream. Keep this unique internal key until the P&ID tag collision is resolved."
+    pid_highlight:
+      x: 11.25
+      y: 29.41
+
+legacy_electrical_channel:
+  source_column: voltage_v
+  display_name: Stack DC Voltage
+  unit: V
+  role: top_kpi_not_one_of_the_16_pid_process_sensors
+  power_rule: "Do not calculate stack power from voltage alone. Add a current signal first, then power_kW = voltage_V * current_A / 1000."
+
+items_requiring_engineering_confirmation:
+  - Approved baseline distance for LT-001 and LT-002
+  - Whether the supplied TT and PT upper limits apply to all TT/PT tags or only selected instruments
+  - L and LL limits for temperature, pressure and gas-quality instruments, if required
+  - Flow alarm limits for FT-001, FT-002, FT-003 and FT-004
+  - Conductivity unit and alarm limits for CT-001
+  - Formal confirmation of the working AIT-001 and AIT-002 gas analyser tags
+  - Resolution of the duplicated FT-003 tag in NX-PID-001
+  - Final engineering units, scaling and calibration for every channel
+  - Current and auxiliary-power signals needed for stack and system efficiency
+  - Whether efficiency is reported on an HHV or LHV basis

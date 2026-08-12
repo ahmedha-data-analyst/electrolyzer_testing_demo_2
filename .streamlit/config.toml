@@ -1,0 +1,9 @@
+[theme]
+primaryColor = "#4EA8DE"
+redColor = "#D32F2F"
+orangeColor = "#F6A609"
+greenColor = "#499823"
+baseRadius = "8px"
+buttonRadius = "8px"
+showWidgetBorder = true
+showSidebarBorder = true
